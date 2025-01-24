@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+
+  <script src="https://unpkg.com/jspsych@7.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.0.0"></script>
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-button-response.js"></script>
+  <script src="jspsych/dist/plugin-html-audio-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created June 2022 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com thanks @ Becky Gilbert & Lizzie Buchanan-Worster ! 
+
+
+
+var jsPsych = initJsPsych({
+    default_iti: 250, 
+    on_finish: function() {
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent) // append result data
+    }
+  });
+  //console.log(existingData);
+
+  jatos.onLoad(() => {
+
+
+    var trial = {
+    type: jsPsychInstructions,
+    pages: [
+    
+      "<div style='width: 700px;'>"+
+      "<div class='float: right;''><img src='images/cbulogo2.png'></images></div>" + "<p><div class='header'><p style='font-size:30px'><strong>Welcome to our study!</strong></p>"+  "<p><div class='header'><strong>Study Title</strong>: Intelligibility ratings of individual sentences</p></div>" + "<p><div style='float:left;'><strong>Principal Investigator</strong></p>" + "<p>Dr Matt Davis</p>" + "MRC Cognition & Brain Sciences Unit</p>" + "<p>15 Chaucer Rd, Cambridge, CB2 7EF</p>" + "<p>Email: matt.davis@mrc-cbu.cam.ac.uk</p></div>" + "<p><div style='float:right;'><strong>Researcher</strong></p>" + "<p>Dr Jeremy Giroud</p>" + "MRC Cognition & Brain Sciences Unit</p>" + "<p>15 Chaucer Rd, Cambridge, CB2 7EF</p>" + "<p>Email: Jeremy.Giroud@mrc-cbu.cam.ac.uk</p></div>" 
+      ,
+     "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p style='font-size:30px'><strong>What is the purpose of the study?</strong></p>" + 
+      "<p> The aim of the research is to understand individual differences in the cognitive mechanisms of spoken language comprehension.</p>" 
+      ,
+     "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p><strong>Who is organising and sponsoring this research?</strong></p>" + 
+      "<p> The Principal Investigator of this study is Dr Matt Davis. Cambridge University is the sponsor for this study based in the United Kingdom. We will be using information from you in order to undertake this study and will act as the data controller for this.  Cambridge University will keep identifiable information about you for 10 years and possibly indefinitely in data archives in accordance with good research practice.</p>" + 
+      "<p> To safeguard your rights, we will use the minimum personally-identifiable information possible.</p>" + 
+      "<p> You can find out more about how we use your information at: https://www.medschl.cam.ac.uk/research/privacy-notice-how-we-use-your-research-data/<p>" 
+     ,
+     "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p><strong>Ethical review of the study</strong></p>" + 
+      "<p> This study has been reviewed by the Cambridge Psychology Research Ethics Committee (CPREC).<p>" + 
+      "<p><strong>Why have I been invited to take part?</strong></p>" + 
+      "<p> You have been asked to participate because you responded to an advertisement for the study through Prolific Academic and you meet the basic eligibility criteria.<p>"+
+      "<p><strong>Do I have to take part?</strong></p>" + 
+      "<p> It is up to you whether or not to take part. If you decide to take part we will ask you to give your consent by checking boxes to indicate your agreement with a series of statements. However, even after you have given your consent, you can withdraw from the study without having to give us a reason.<p>" + 
+      "<p> You can withdraw by closing the browser tab/window during the session.<p>"  
+      ,
+      
+      "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p><p style='font-size:30px'><strong>What will I be asked to do in the study?</strong></p>" + 
+      "<p> (1)	You will be taking part remotely from your own computer.<p>" + 
+      "<p> (2)	You will fill a consent form in order to take part in the study.</p>"+
+      '<p> (3)	You will also complete a short questionnaire asking about your age, your experience with English and other languages, and education level.</p>'+
+      '<p> (4)	You will be able to adjust the sound volume to your preference before beginning the experiment.</p>'+
+      '<p> (5)	You will then complete a short test to be sure that you are wearing headphones.</p>'+
+      "<p> (6)	You will be asked to listen to the stimuli and to perform a simple language-related task. Your task will be to type as many words as you understood and rate the intelligibility of the sentences (e.g., the ease with which you understand the spoken words present in the audio) on a 1 to 7 scale. Your behavioural responses will be recorded. The task will be explained in detail.<p>" ,
+      "<div style='width: 700px;'>"+"<div class='float: right;''><p><strong>Will I be paid for taking part or have my expenses paid?</strong></p>" + 
+      "<p>To thank you for your contribution to this study we will reimburse you for your time.<p>"  ,
+      
+
+
+
+
+      "<div style='width: 700px;'>"+"<div class='float: right;''><p><strong>What happens to my personally identifiable information?</strong></p>" + 
+      "<p>You have provided us with two types of information. Personally identifiable information includes your Prolific ID- information from which you could be identified and that we use to contact you. Anonymised research data includes information like the buttons you pushed on a computer task and your answers on a questionnaire. In other words, information from which it would not be possible, or very difficult, to identify you personally once it is no longer connected to your Personally Identifiable Information.<p>" +  
+      "<p>The University of Cambridge Data Protection Officer is the Data Controller for any Personally Identifiable Information that you have given us. Contact details: The Old Schools, Trinity Lane, Cambridge CB2 1TN data.protection@admin.cam.ac.uk.<p>" + 
+      "<p>Electronic Personally Identifiable Information is either entered directly into a secure area of our computer system or transferred there as soon as possible after collection. These data will be held for a minimum of 10 years and possibly indefinitely in accordance with good research practice.<p>" + 
+      "<p>If you have questions about how long and for what reasons your Personally Identifiable Information is held, please ask the Researcher.<p>" ,
+      
+      "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p><strong>What happens to my anonymised research data?</strong><p>" + 
+      "<p>Your anonymised research data, typically combined with similar information from other volunteers, will be used for scientific research. We take great care to ensure that individuals cannot be identified from our research outputs.<p>" + 
+      "<p>To make the most of your anonymised research data we plan to look after it for the long term and may use it to answer research questions beyond those for which it was originally collected.<p>" + 
+      "<p>In addition to our own analyses, we agree with the principle that research data, collected with public money, are a public good, produced in the public interest, which should be made openly available with as few restrictions as possible. In line with this we may also share anonymised research data with other researchers in the UK and around the world and may make anonymised research data available as “Open Data”.<p>" + 
+      "<p>Data will be held for a minimum of 10 years and possibly indefinitely in accordance with good research practice.</p>"  ,
+      
+      "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p><strong>Can I get access to my results from the study?</strong><p>" + 
+      "<p>We will not divulge individual results. If you have concerns about your performance please discuss these with the researcher. General results will be reported in standard ways, for example at academic conferences, in journal publications and at public communication events.</p>" + 
+      "<p><strong>Are there compensation arrangements if something goes wrong?</strong><p>" + 
+      "<p>The study has insurance to deal with any claim in the very unlikely event of anything going wrong that causes harm.</p>" ,
+      
+      "<div style='width: 700px;'>"+
+      "<div class='float: right;''><p><strong>What should I do if I have a complaint about the study?</strong><p>" + 
+      "<p>If you have a complaint about this study please contact the Principal Investigator in the first instance. You can also contact the Director of the Cognition and Brain Sciences Unit (director@mrc-cbu.cam.ac.uk).</p></div>" + 
+      "<p><div style='text-align:centre;'>Thank you for considering taking part in this study. Our research depends entirely on the goodwill of potential volunteers such as you.  If you require any further information, we will be pleased to help you in any way we can.</p></div>"
+    ],
+    button_label_next: "Continue",
+    button_label_previous: "Return to previous page",
+    show_clickable_nav: true
+}
+
+
+
+var timeline = []
+
+
+
+
+timeline.push(trial);
+
+
+var block_2 = {
+  timeline: timeline};
+
+ 
+
+jsPsych.run([block_2])
+
+} );
+ 
+
+</script>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+
+  <script src="https://unpkg.com/jspsych@7.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey@2.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.0.0"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.0.0/css/survey.css">
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-button-response.js"></script>
+  <script src="jspsych/dist/plugin-html-audio-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="https://unpkg.com/@jspsych/plugin-html-slider-response@1.1.3"></script>
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created November 2024 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com 
+
+
+ var jsPsych = initJsPsych({
+    default_iti: 250, 
+    show_progress_bar: false,
+    message_progress_bar: '',
+    auto_update_progress_bar: false,
+    //show_progress_bar: true,
+    on_finish: function() {
+
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)
+
+    } });
+
+ jatos.onLoad(() => {
+
+  // Declare timeline 
+  var timeline = [];
+  // Preload audios
+  const audioElement = document.querySelector('audio');
+ // var obj = document.createElement('audio');
+  //console.log(obj.volume);
+  var preload = {
+    type: jsPsychPreload,
+    auto_preload: true };
+
+timeline.push(preload)
+
+
+// Welcom training trial
+
+var welcome_training = {
+      type: jsPsychInstructions,
+      pages: [
+      '<h1><b>Welcome to the short training session!</b></h1>'+
+      "It is time to get familiar with the task!"+
+      "<p>Click 'Next' to continue.</p>"],
+        show_clickable_nav: true 
+      };
+
+timeline.push(welcome_training)
+
+
+// Instruction trial
+var instructions = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: 
+      '<h1><b>Instructions</b></h1>'+
+      '<p>After each excerpt you will be asked to report by typing with you keyboard what you heard</p>'+
+      '<p>If you do not fully understand the sentence please type as many words as you can (the order does not matter).</b>'+
+      '<p>If you can not recognise any word, please type the # symbol as a response is required<p/>'+
+      '<p>You will also rate the sentence <b>intelligibility</b>, e.g., the ease with which<p/>'+
+      '<p>you understood the spoken words. You will make each rating on a scale from 1 to 7,</b>'+
+      '<p>where 1 = <b>"not at all intelligible"</b> and and 7 = <b>"perfectly intelligible"</b>.</p>'+
+      '<p>You will not be able to give an answer before the end of each audio excerpt.</p>'+
+      '<p>Remember, these sentences are all meaningful sentences.</p>'+
+      '<p><b>Do not be surprised, if you have trouble understanding some excerpts, it is totally normal</b>.</p>'+
+      '<p>Try to be as consistent as possible in your report.</p>'
+      ,
+      choices: ["continue"],
+  response_ends_trial: true
+  
+      };
+
+timeline.push(instructions)
+
+
+var firstTraining_trials = [{ stim:"training_stims2/0_0.wav" , name: "0_0.wav" , cond: "AnchorMaxIntelligibility" , threshold: "0" }]
+
+
+var condis = ['Inf_0.2','Inf_0.4','Inf_0.5','2_Inf','5.5_Inf','6_Inf']
+var names = ['sentence2','sentence3', 'sentence4']
+var randcondis = jsPsych.randomization.sampleWithoutReplacement(condis, 4);
+
+
+var training_trials = [];
+
+for (var i = 0; i < names.length; i++) {
+  var b = {};
+  var curstim = randcondis[i] +'_'+ names[i] + '.wav'
+  b.stim = "training_stims2/"+ 'filter_'+ curstim
+  b.name = names[i]  
+  if (randcondis[i].split('_')[0] ==='Inf'){
+    b.cond = 'Spectral'}
+  else {b.cond = 'Temporal'}
+  
+  b.threshold = randcondis[i].split('_')[1]
+  training_trials.push(b)      }
+
+
+
+
+
+// trick to make sure that the first stim is always fully intelligible
+for (var i = 0; i < training_trials.length; i++) {
+  firstTraining_trials.push(training_trials[i]);
+};
+
+
+// var training_trials3 = firstTraining_trials.push(training_trials2);
+
+// Loop to populate the trials 
+var cur_rep = 0;
+for (values of firstTraining_trials) {
+  cur_rep +=1
+// trial to warn participant that the sentence will be played
+  var warn = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:
+              "<p style='font-size: 25px'> Be ready to listen to the next sentence.</p>"+
+              '<p>Sentence n° '+cur_rep+"</p>",  
+  choices: ["listen to the sentence"],
+  data: {task: 'Prepare for listening'}};
+  // Listening trial
+  var trial_listen = {
+    type: jsPsychAudioButtonResponse,
+    stimulus: values.stim,
+    prompt:'',//prompt: "<p style='font-size: 25px'>" + values.written + "</p>",
+    choices: ["LISTEN"],
+    response_allowed_while_playing: false,
+    trial_ends_after_audio: true,
+    data: {task: 'Listening'}};
+
+  //  Survey trial with both words typing and intelligibility ratings
+  var survtrial = {
+    type: jsPsychSurvey,
+    // save important details about the stimulus presented 
+    data: { task: 'intelligibility rating',
+            audio_played: values.name,
+            condition: values.cond,
+            threshold: values.threshold,
+            content: values.written  },
+    survey_json: {
+    showQuestionNumbers: false,
+    showCompletedPage: false,
+    //title: 'Intelligibility rating',
+      pages: [
+        { elements: [
+          { type: 'text',
+            title: 'Type as many words as you heard (if you do not recognise any word, type #)', 
+            name: 'WORDS', 
+            isRequired: true,
+            widthMode: "responsive",
+            size: 100},
+          { type: 'rating',
+            name: 'intelligibility ratings',
+            title: 'How intelligible was the speech excerpt?',
+            //description: 'Button rating scale with min/max descriptions',
+            minRateDescription: 'Not at all intelligible',
+            maxRateDescription: 'Perfectly intelligible',
+            displayMode: 'buttons',
+            rateValues: [1,2,3,4,5,6,7],
+            isRequired: true,
+            widthMode: "responsive"}]}]}}
+
+  timeline.push(warn)
+  timeline.push(trial_listen)
+  timeline.push(survtrial)};
+
+
+
+
+
+var end_training = {
+      type: jsPsychInstructions,
+      pages: [
+      '<h1><b>Well done! You are now ready for the main experiment!</b></h1>'+
+      '       '+
+      'The task is exactly the same'+
+      "<p>Click 'Next' to start the main experiment.</p>"],
+        show_clickable_nav: true 
+      };
+
+timeline.push(end_training);
+
+
+//console.log(randtrials);
+
+
+var block_1 = {
+    timeline: timeline};
+
+   
+jsPsych.run([block_1])
+
+} );
+   
+
+</script>
+</html>

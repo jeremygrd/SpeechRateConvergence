@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+
+  <script src="https://unpkg.com/jspsych@7.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey@2.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.0.0"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.0.0/css/survey.css">
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-button-response.js"></script>
+  <script src="jspsych/dist/plugin-html-audio-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="https://unpkg.com/@jspsych/plugin-html-slider-response@1.1.3"></script>
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created November 2024 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com 
+
+
+ var jsPsych = initJsPsych({
+    default_iti: 250, 
+    show_progress_bar: true,
+    message_progress_bar: '',
+    auto_update_progress_bar: false,
+    //show_progress_bar: true,
+    on_finish: function() {
+
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)
+
+    } });
+
+ jatos.onLoad(() => {
+
+  // Declare timeline 
+  var timeline = [];
+  // Preload audios
+  const audioElement = document.querySelector('audio');
+ // var obj = document.createElement('audio');
+  //console.log(obj.volume);
+  var preload = {
+    type: jsPsychPreload,
+    auto_preload: true };
+
+timeline.push(preload)
+
+
+
+
+var experimental_stims = ["frm01_s01.wav",
+"frm01_s02.wav",
+"frm01_s03.wav",
+"frm01_s04.wav",
+"frm01_s05.wav",
+"frm01_s06.wav",
+"frm01_s07.wav",
+"frm01_s08.wav",
+"frm01_s09.wav",
+"frm01_s10.wav",
+"frm01_s11.wav",
+"frm01_s12.wav",
+"frm01_s13.wav",
+"frm01_s14.wav",
+"frm01_s15.wav",
+"frm01_s16.wav",
+"frm01_s17.wav",
+"frm01_s18.wav",
+"frm01_s19.wav",
+"frm01_s20.wav",
+"frm01_s21.wav",
+"frm01_s22.wav",
+"frm01_s23.wav",
+"frm01_s24.wav",
+"frm01_s25.wav",
+"frm01_s26.wav",
+"frm01_s27.wav",
+"frm01_s28.wav",
+"frm01_s29.wav",
+"frm01_s30.wav",
+"frm01_s31.wav",
+"frm01_s32.wav",
+"frm01_s33.wav"];
+
+
+var stim_dic =  {frm01_s01 : "If it doesn't matter who wins why do we keep score",
+ frm01_s02: "Stop each car if it's little",
+ frm01_s03: "Play in the street up ahead",
+ frm01_s04: "A fifth wheel caught speeding",
+ frm01_s05: "It's been about two years since Davey kept shotguns",
+ frm01_s06: "Charlie did you think to measure the tree",
+ frm01_s07: "Tina got cued to make a quicker escape",
+ frm01_s08: "Joe books very few judges",
+ frm01_s09: "Here I was in Miami and Illinois",
+ frm01_s10: "She had your dark suit in greasy wash water all year",
+ frm01_s11: "Don't ask me to carry an oily rag like that",
+ frm01_s12: "A boring novel is a superb sleeping pill",
+ frm01_s13: "Call an ambulance for medical assistance",
+ frm01_s14: "We saw eight tiny icicles below our roof",
+ frm01_s15: "Each untimely income loss coincided with the breakdown of a heating system part",
+ frm01_s16: "Jeff thought you argued in favor of a centrifuge purchase",
+ frm01_s17: "The sermon emphasized the need for afirmative action",
+ frm01_s18: "Kindergarten children decorate their classrooms for all holidays",
+ frm01_s19: "Cory and Trish played tag with beach balls for hours",
+ frm01_s20: "The frightened child was gently subdued by his big brother",
+ frm01_s21: "The tooth fairy forgot to come when Roger's tooth fell out",
+ frm01_s22: "Alice's ability to work without supervision is noteworthy",
+ frm01_s23: "Special task forces rescue hostages from kidnappers",
+ frm01_s24: "If Carol comes tomorrow have her arrange for a meeting at two",
+ frm01_s25: "Military personnel are expected to obey government orders",
+ frm01_s26: "Laugh dance and sing if fortune smiles upon you",
+ frm01_s27: "The fish began to leap frantically on the surface of the small lake",
+ frm01_s28: "The easygoing zoologist relaxed throughout the voyage",
+ frm01_s29: "Brush fires are common in the dry underbrush of Nevada",
+ frm01_s30: "How much will it cost to do any necessary modernizing and redecorating",
+ frm01_s31: "Was she just naturally sloppy about everything but her physical appearance",
+ frm01_s32: "Is a relaxed home atmosphere enough to help her outgrow these traits",
+ frm01_s33: "The same shelter could be built into an embankment or below ground level"};
+
+
+
+ var experimental_stims_rand = jsPsych.randomization.sampleWithoutReplacement(experimental_stims, experimental_stims.length-1);
+
+
+var conditions = [];
+
+// Here we populate the variable condition that will be used to determine the audio files to play
+// In our case we want 8 sentences per condition with 2 values of filter cutoff 
+// So we assign the first 8 sentences the temporal filtering of value...
+// then the 8 next ones the temporal filtering of value...
+// then the 8 next ones the Spectral filtering of value...
+// then the 8 next ones the Spectral filtering of value...
+
+var idxtrial2 = 0;
+
+for (var i = 0; i < experimental_stims_rand.length; i++) {
+  var b = {};
+
+  if(i < 8){
+    var curstim = experimental_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/filter_5.5_Inf_"+experimental_stims_rand[i]
+    b.name = "filter_5.5_Inf_"+experimental_stims_rand[i]
+    b.cond = 'Temporal'
+    b.threshold = '5.5'
+    b.written = stim_dic[curstim]
+    conditions.push(b)      }else if (i>=8 && i<16){
+    var curstim = experimental_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/filter_6_Inf_"+experimental_stims_rand[i]
+    b.name = "filter_6_Inf_"+experimental_stims_rand[i]
+    b.cond = 'Temporal'
+    b.threshold = '6'
+    b.written = stim_dic[curstim]
+    conditions.push(b) }else if (i>=16 && i<24){
+    var curstim = experimental_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/filter_Inf_0.4_"+experimental_stims_rand[i]
+    b.name = "filter_Inf_0.4_"+experimental_stims_rand[i]
+    b.cond = 'Spectral'
+    b.threshold = '0.4'
+    b.written = stim_dic[curstim]
+    conditions.push(b) }else {
+    var curstim = experimental_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/filter_Inf_0.5_"+experimental_stims_rand[i]
+    b.name = "filter_Inf_0.5_"+experimental_stims_rand[i]
+    b.cond = 'Spectral'
+    b.threshold = '0.5'
+    b.written = stim_dic[curstim]
+    conditions.push(b) 
+    }}
+
+
+// here we do the same but for the anchor
+
+
+var anchors_stims = ["1_1.wav",
+"1_2.wav",
+"1_10.wav",
+"1_11.wav",
+"1_33.wav",
+"1_34.wav",
+"1_37.wav",
+"1_54.wav",
+"1_65.wav",
+"1_73.wav",
+"1_74.wav",
+"2_6.wav",
+"2_21.wav",
+"2_22.wav",
+"2_33.wav",
+"2_38.wav",
+"2_45.wav",
+"2_46.wav",
+"2_53.wav",
+"2_54.wav",
+"6_17.wav",
+"6_22.wav",
+"6_23.wav",
+"6_41.wav"]
+
+
+
+
+var anchors_dic = {1_1: "she called her brother, Randy" ,
+1_2: "she has no recollection ofthis phone call" ,
+1_10: "The film brings out all the tensions and colors of the time" ,
+1_11: "She has always loved history" ,
+1_33: "They decided to do it anyway" ,
+1_34: "They played anywhere they could draw a crowd" ,
+1_37: "We were a team and we helped each other" ,
+1_54: "They married in 1965" ,
+1_65: "They exchanged gifts" ,
+1_73: "This is the right thing to do" ,
+1_74: "Everyone's an influencer shes says" ,
+2_6: "That's the ultimate awesome thing" ,
+2_21: "The answer is in technology" ,
+2_22: "It seems like we would be wiser to act while the window is open" ,
+2_33: "I wouldn't say I'm counting on it but it could happen" ,
+2_38: "The same will happen in other countries" ,
+2_45: "I do like parties though" ,
+2_46: "It was quite a bit better I liked it" ,
+2_53: "I may need to do something like that" ,
+2_54: "And that was not right" ,
+6_17: "I didn't know what to think of this fearsome woman" ,
+6_22: "Another bites the dust" ,
+6_23: "If love is something you cherish" ,
+6_41: "I hope I'm not beeing reductive"}
+
+
+var anchors_stims_rand = jsPsych.randomization.sampleWithoutReplacement(anchors_stims, anchors_stims.length);
+var idxtrial = 0;
+var anchorconditions = [];
+// 8 fully intelligible
+// 4 fully unintelligible Spectral 0.2
+// 4 fully unintelligible Temporal 2
+for (var i = 0; i < anchors_stims_rand.length; i++) {
+  var b = {}
+  if(i < 8){
+    var curstim = anchors_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/"+anchors_stims_rand[i]
+    b.name = anchors_stims_rand[i]
+    b.cond = 'Anchor_fullyIntelligible'
+    b.threshold = '0'
+    b.written = anchors_dic[curstim]
+    anchorconditions.push(b)      }else if (i>=8 && i<12){
+    var curstim = anchors_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/filter_2_Inf_"+anchors_stims_rand[i]
+    b.name = "filter_2_Inf_"+anchors_stims_rand[i]
+    b.cond = 'Anchor_Temporal_unIntelligible'
+    b.threshold = '2'
+    b.written = anchors_dic[curstim]
+    anchorconditions.push(b) }else if (i>=12 && i<16){
+    var curstim = anchors_stims_rand[i].split('.')[0]
+    b.stim = "exp_stims2/filter_Inf_0.2_"+anchors_stims_rand[i]
+    b.name = "filter_Inf_0.2_"+anchors_stims_rand[i]
+    b.cond = 'Anchor_Spectral_unIntelligible'
+    b.threshold = '0.2'
+    b.written = anchors_dic[curstim]
+    anchorconditions.push(b) }
+    }
+
+const semifinal = conditions.concat(anchorconditions);
+
+var intelligibility_trials = jsPsych.randomization.sampleWithoutReplacement(semifinal, semifinal.length);
+
+
+
+// Randomize and extract the proper number of stimuli 
+//var intelligibility_trials = jsPsych.randomization.sampleWithoutReplacement(intelligibility_trials, intelligibility_trials.length);
+
+// short part to announce the start of the main block
+var intro = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:
+              "<p style='font-size: 25px'><b> Welcome to the main experiment</b></p>" + 
+              "<p style='font-size: 25px'> You will now perform the exact same task that during the short training session.</p>"+
+              "<p style='font-size: 25px'> You will listen to a sentence and you will have to type as many words as you understood </p>" +
+              "<p style='font-size: 25px'> and to rate the ease with which you understood the different sentences.</p>",
+  choices: ["Start main Experiment"],
+  on_start: function() {
+        // set progress bar to 0 at the start of experiment
+        jsPsych.setProgressBar(0);}};
+
+timeline.push(intro);
+
+// Slice the number of trials just for debugging
+//var intelligibility_trials2  = intelligibility_trials.splice(0, 10);
+
+// Total number of trials
+var n_trials = intelligibility_trials.length;
+// Keep track of the trial number 
+var cur_rep = 0;
+// var intelligibility_trials = intelligibility_trials.splice(0, 2); //should be 6 because six sentences to read in the first part
+
+
+// Loop to populate the trials 
+
+for (values of intelligibility_trials) {
+  cur_rep +=1
+// trial to warn participant that the sentence will be played
+  var warn = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:
+              "<p style='font-size: 25px'> Be ready to listen to the next sentence.</p>"+
+              '<p>Sentence n° '+cur_rep+"</p>",  
+  choices: ["listen to the sentence"],
+  data: {task: 'Prepare for listening'}};
+  // Listening trial
+  var trial_listen = {
+    type: jsPsychAudioButtonResponse,
+    stimulus: values.stim,
+    prompt:'',//prompt: "<p style='font-size: 25px'>" + values.written + "</p>",
+    choices: ["LISTEN"],
+    response_allowed_while_playing: false,
+    trial_ends_after_audio: true,
+    data: {task: 'Listening'}};
+
+  //  Survey trial with both words typing and intelligibility ratings
+  var survtrial = {
+    type: jsPsychSurvey,
+    // save important details about the stimulus presented 
+    data: { task: 'intelligibility rating',
+            audio_played: values.name,
+            condition: values.cond,
+            threshold: values.threshold,
+            content: values.written  },
+    survey_json: {
+    showQuestionNumbers: false,
+    showCompletedPage: false,
+    //title: 'Intelligibility rating',
+      pages: [
+        { elements: [
+          { type: 'text',
+            title: 'Type as many words as you heard (if you do not recognise any word, type #)', 
+            name: 'WORDS', 
+            isRequired: true,
+            widthMode: "responsive",
+            size: 100},
+          { type: 'rating',
+            name: 'intelligibility ratings',
+            title: 'How intelligible was the speech excerpt?',
+            //description: 'Button rating scale with min/max descriptions',
+            minRateDescription: 'Not at all intelligible',
+            maxRateDescription: 'Perfectly intelligible',
+            displayMode: 'buttons',
+            rateValues: [1,2,3,4,5,6,7],
+            isRequired: true,
+            widthMode: "responsive"}]}]},
+    on_finish: function() {
+          // at the end of each trial, update the progress bar
+          var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+          jsPsych.setProgressBar(curr_progress_bar_value + (1/n_trials));},}
+
+  timeline.push(warn)
+  timeline.push(trial_listen)
+  timeline.push(survtrial)};
+
+
+
+
+var ending_trial = {
+type: jsPsychHtmlButtonResponse,
+stimulus: "<p style='font-size: 25px'> You have finished the experiment.</p>"+
+"<pstyle='font-size: 25px'> Now, you will be asked a few questions</p>" +
+"<pstyle='font-size: 25px'> and redirected to the Prolific completion page.</p>" ,
+choices: ["Finish"],
+response_ends_trial: true
+
+};
+timeline.push(ending_trial)
+
+
+
+
+// console.log(experimental_stims_rand)
+
+// console.log(anchors_stims_rand);
+
+// console.log(conditions)
+
+// console.log(intelligibility_trials);
+
+
+var block_1 = {
+    timeline: timeline};
+
+   
+//jsPsych.run([preload,instructions,welcome_training,procedure_training,block_1,break_trial]); //procedure1,ending]);  instructions,welcome_training,procedure_training,
+// Save stimuli sequences for the next blocks
+jatos.studySessionData.randtrials_intelligibility = intelligibility_trials;
+console.log(jatos.studySessionData.randtrials);
+
+jsPsych.run([block_1])
+
+} );
+   
+
+</script>
+</html>
