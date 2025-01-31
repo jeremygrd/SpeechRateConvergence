@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Audio check</title>
+    <script src = "jspsych-6.1.0/jspsych.js" type="text/javascript"></script>
+    <script src = "jspsych-6.0.5/plugins/jspsych-instructions-hide-back-button.js" type="text/javascript"></script>
+    <script src = "jspsych-6.1.0/plugins/jspsych-fullscreen.js" type="text/javascript"></script>
+    <script src = "jspsych-6.1.0/plugins/jspsych-audio-button-response-ctls.js"></script>
+    <script src = "jspsych-6.1.0/plugins/jspsych-call-function.js" type="text/javascript"></script>
+    <script src = "jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js" type="text/javascript"></script>
+    <script src = "js/headphone_check_data.js" type="text/javascript"></script>
+    <script src = "jatos.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="jspsych-6.1.0/css/jspsych.css">
+    <link rel="stylesheet" href="css/listen-up.css" title="preferred"></link> 
+</head>
+<body>
+</body>
+<script type="text/javascript">
+    jatos.onLoad(function() {
+
+    var audio_stim = [];
+    var timeline = [];
+    var trials_timeline = [];
+    var perf_thresh = 5; // must get at least this many correct responses out of 6
+    var attempt_number = 1;
+    var max_attempts = 2;
+    var repeat_trials = false;
+    var end_study_audio_errors = false;
+    var end_study_incorrect_responses = false;
+
+    var file_path = "headphones/";
+    var example = "HT_example.mp3";
+    var example_file_full = [file_path, example].join("");
+    var redirect_url = jatos.componentJsonInput.url;
+
+    function getAudioHtml(i) {
+        var full_file_name = [file_path, trial_data_rand[i].fileName].join("");
+        return [full_file_name];
+    }
+
+    function get_data_fn(i) {
+        var get_data = function() {
+            var all_data = trial_data_rand[i];
+            all_data.task_segment = 'headphone_check';
+            all_data.attempt_number = attempt_number;
+            return all_data;
+        };
+        return get_data;
+    }
+
+    // start fullscreen
+    var fullscreen_trial = {
+        type: 'fullscreen',
+        fullscreen_mode: true,
+        message: "<p>For the next part of the study, you must be in your browser&#39;s fullscreen mode.</p><p>The experiment will switch to fullscreen when you click the button below.</p><br/>",
+        button_label: "Start fullscreen"
+    };
+    timeline.push(fullscreen_trial);
+
+    var instructions = {
+        type: 'instructions-hide-back-button',
+        pages: ['<p>Now you will hear sets of three sounds separated by silences.</p>' +
+            '<p>For each one, your task is to say <strong>which sound was the softest (quietest)</strong>.</p>' +
+            '<p>You can respond by clicking the button for Sound 1, 2, or 3.</p>' +
+            '<p>The audio should play automatically.<br>If it does not, you should try clicking the play button on the audio player.</p>' +
+            '<p>If you are unable to play the audio, please press the &#39;Error&#39; button.</p>' +
+            '<p>Click &quot;Next&quot; for an example.</p>'],
+        show_clickable_nav: true,
+        timing_post_trial: 1000,
+        data: {task_segment: 'instructions'}
+    };
+    trials_timeline.push(instructions);
+
+    var example_trial = {
+        type: 'audio-button-response',
+        sources: [example_file_full],
+        prompt: "<p>Your task is to say which sound was the <strong>softest</strong></p><p>The correct response in this example is 2,<br>so please click the &#39;Sound 2&#39; button.</p>",
+        choices: ['1','2','3','Error'],
+        button_html: ["<button class='jspsych-btn'>Sound %choice%</button>","<button class='jspsych-btn'>Sound %choice%</button>","<button class='jspsych-btn'>Sound %choice%</button>","<button class='jspsych-btn'>%choice%</button>"], 
+        autoplay: true,
+        response_ends_trial: true,
+        trial_ends_after_audio: false,
+        controls: true,
+        data: {"soundNumber": -1,"correct": 2,"version": 1,"fileName": example,"task_segment": "example", "attempt_number": 1}, 
+        on_finish: function(data) {
+            var accuracy = 0;
+            if (data.button_pressed == (data.correct - 1)) {
+                accuracy = 1;
+            } 
+            jsPsych.data.get().addToLast({"accuracy": accuracy});
+        }
+    };
+    trials_timeline.push(example_trial);
+    audio_stim.push(example_file_full);
+
+    var start_task = {
+        type: 'instructions-hide-back-button',
+        pages: ['<p>Now you&#39;re ready to start the task.</p><p>Please make sure that you are wearing <strong>earphones or headphones</strong>,<br>and <strong>do not adjust the volume</strong> on your computer.</p><p>When you are ready, click &quot;Next&quot; to start.</p>'],
+        show_clickable_nav: true,
+        timing_post_trial: 1000,
+        data: {task_segment: 'start_task'}
+    };
+    trials_timeline.push(start_task);
+
+    // randomise trials
+    var trial_data_rand = jsPsych.randomization.shuffle(trial_data);
+
+    for (var i = 0; i < trial_data_rand.length; i++) {
+        var audio_trial = {
+            type: 'audio-button-response',
+            sources: getAudioHtml(i),
+            prompt: "<p>Which sound was the <strong>softest</strong>?</p>",
+            choices: ['1','2','3','Error'],
+            button_html: ["<button class='jspsych-btn'>Sound %choice%</button>","<button class='jspsych-btn'>Sound %choice%</button>","<button class='jspsych-btn'>Sound %choice%</button>","<button class='jspsych-btn'>%choice%</button>"], 
+            autoplay: true,
+            response_ends_trial: true,
+            trial_ends_after_audio: false,
+            controls: true,
+            post_trial_gap: 500,
+            data: (function(){
+                    return get_data_fn(i);
+                })(i), 
+            on_finish: function(data) {
+                var accuracy = 0;
+                if (data.button_pressed == (data.correct - 1)) {
+                    accuracy = 1;
+                } 
+                jsPsych.data.get().addToLast({"accuracy": accuracy});
+            }
+        };
+        trials_timeline.push(audio_trial);
+        audio_stim.push([file_path, trial_data_rand[i].fileName].join(""));
+    }
+
+    // function to check performance at the end of a set of trials
+    // returns false if threshold is met
+    // returns true if trials should be repeated
+    var check_perf = function(n) {
+        var n_correct = jsPsych.data.get().filter({task_segment:"headphone_check", attempt_number:n, accuracy:1}).count();
+        if (n_correct >= perf_thresh) {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    // function to check for audio errors at the end of a set of trials
+    // returns number of reported audio errors
+    var number_audio_errors = function(n) {
+        var n_errors = jsPsych.data.get().filter({task_segment:"headphone_check", attempt_number:n, button_pressed:"3"}).count();
+        console.log('check for errors, n errors: ', n_errors);
+        return n_errors;
+    };
+
+    var repeat_page_audio_errors = {
+        type: 'instructions-hide-back-button',
+        pages: ['<p>You reported errors playing the audio in that test,<br>so now you&#39;ll have the chance to try it again.</p><p>Please make sure that you are wearing headphones/earphones that work properly<br>and that you are in a quiet, distraction-free environment.</p><p>When you are ready, press &quot;Next&quot; to see the instructions and repeat the test.</p>'],
+        show_clickable_nav: true,
+        data: {task_segment: 'repeat_screen'}
+    };
+    // show repeat screen and repeat test if performance criteria is not met 
+    var repeat_conditional_audio_errors = {
+        timeline: [repeat_page_audio_errors],
+        conditional_function: function() {
+            var perf_thresh_not_met = check_perf(attempt_number);
+            if (!perf_thresh_not_met) {
+                // if participant passed the performance criteria then do not repeat trials due to audio errors
+                end_study_audio_errors = false;
+                repeat_trials = false;
+                return false;
+            }
+            var n_aud_errs = number_audio_errors(attempt_number);
+            if (n_aud_errs >= 1) {
+                if (attempt_number >= max_attempts) {
+                    end_study_audio_errors = true;
+                    repeat_trials = false;
+                    return false;
+                } else {
+                    end_study_audio_errors = false;
+                    repeat_trials = true;
+                    return true;
+                }
+            } else {
+                end_study_audio_errors = false;
+                repeat_trials = false;
+                return false;
+            }
+        }
+    };
+    trials_timeline.push(repeat_conditional_audio_errors);
+
+    var repeat_page_incorrect_responses = {
+        type: 'instructions-hide-back-button',
+        pages: ['<p>You did not get enough correct responses to continue.</p><p>You will now have chance to repeat the test.</p><p>Please make sure that you are wearing headphones/earphones that work properly<br>and that you are in a quiet, distraction-free environment.</p><p>When you are ready, press &quot;Next&quot; to see the instructions and repeat the test.</p>'],
+        show_clickable_nav: true,
+        data: {task_segment: 'repeat_screen'}
+    };
+    // show repeat screen and repeat test if performance criteria is not met 
+    var repeat_conditional_incorrect_responses = {
+        timeline: [repeat_page_incorrect_responses],
+        conditional_function: function() {
+            if (repeat_trials || end_study_audio_errors) {
+                end_study_incorrect_responses = false;
+                return false;
+            }
+            var rep = check_perf(attempt_number);
+            if (rep) {
+                if (attempt_number >= max_attempts) {
+                    end_study_incorrect_responses = true;
+                    repeat_trials = false;
+                    return false;
+                } else {
+                    end_study_incorrect_responses = false;
+                    repeat_trials = true;
+                    return true;
+                }
+            } else {
+                end_study_incorrect_responses = false;
+                repeat_trials = false;
+                return false;
+            }
+        }
+    };
+    trials_timeline.push(repeat_conditional_incorrect_responses);
+
+    // repeat trials and repeat page (conditional) until either performance threshold is met or max attempts is reached
+    var trials_loop_node = {
+        timeline: trials_timeline,
+        loop_function: function(data) {
+            attempt_number++;
+            if (repeat_trials) {
+                repeat_trials = false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
+    timeline.push(trials_loop_node);
+
+    var exit_fullscreen = {
+        type: 'fullscreen',
+        fullscreen_mode: false,
+    };
+
+    // send data 
+    send_data_fn = function(end_study_type) {
+        jsPsych.data.get().addToLast({"met_HT_criteria":"no"});
+        var results = jsPsych.data.get().json;
+        var end_msg = "HT_FAIL";
+        if (end_study_type == "performance") {
+            end_msg = 'HT_FAIL_PERF';
+        } else if (end_study_type == "audio_errors") {
+            end_msg = 'HT_FAIL_AUD_ERR';
+        } 
+        jatos.submitResultData(results, function() {jatos.endStudyAjax(false,end_msg);});
+    };
+    var send_data = {
+        type: 'call-function',
+        func: function() {
+            var fail_type = "unknown";
+            if (end_study_incorrect_responses) {
+                fail_type = "performance";
+            } else if (end_study_audio_errors) {
+                fail_type = "audio_errors";
+            } 
+            send_data_fn(fail_type);
+        }
+    };
+
+    // end message if performance criteria is not met
+    var end_page_incorrect_responses = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>You did not meet the criteria for this study, so the study has ended.</p><p>If you have any questions or concerns, please contact the researcher on Prolific.</p><p>By clicking <b>any key</b> you will be redirected to the Prolific end page.</p><p>Following the validation of your submission you will be paid 0.5£ for your time.</font></p>',
+            // Please do not mark your Prolific submission as "finished" - leave it to time out or use the "return submission" option. <br>Please contact the researcher on Prolific to be compensated £0.5 for your time.</p><p>You can end this session by closing your browser tab or window.</p>',
+        choices: jsPsych.ALL_KEYS,
+        on_finish: function() {
+//     // if the participant gets this message, then the code below will send their data back to the server
+//     // and end their study, even though they will be 'stuck' on this page and will have to close the browser tab.
+     var result_json = jsPsych.data.get().json();
+     //jatos.submitResultData(result_json, endStudyAjax5({ window.location.href: redirect_url }))
+     
+    jatos.submitResultData(result_json)
+    .then(jatos.endStudyAjax)
+    .then(() => { window.location.href = redirect_url });
+   }
+    };
+
+    // end message for audio errors
+    var end_page_audio_errors = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>Unfortunately you are not able to continue with this study because of errors playing the audio.</p><p>If you have any questions or concerns, please contact the researcher on Prolific.</p><p>By clicking <b>any key</b> you will be redirected to the Prolific end page.</p><p>Following the validation of your submission you will be paid 0.5£ for your time.</font></p>',
+            
+        // <p>Please do not mark your Prolific submission as "finished" - leave it to time out or use the "return submission" option.<p>If you have any questions or concerns, please contact the researcher on Prolific.</p><p>You can end this session by closing your browser tab or window.</p>',
+        choices: jsPsych.ALL_KEYS,
+        on_finish: function() {
+//     // if the participant gets this message, then the code below will send their data back to the server
+//     // and end their study, even though they will be 'stuck' on this page and will have to close the browser tab.
+     var result_json = jsPsych.data.get().json();
+     //jatos.submitResultData(result_json, endStudyAjax5({ window.location.href: redirect_url }))
+     
+    jatos.submitResultData(result_json)
+    .then(jatos.endStudyAjax)
+    .then(() => { window.location.href = redirect_url });
+   }
+    };
+
+
+
+    // conditional for ending study due to performance criteria
+    var end_page_conditional_incorrect_responses = {
+        // timeline: [exit_fullscreen, send_data, end_page_incorrect_responses],
+        timeline: [exit_fullscreen, end_page_incorrect_responses],
+
+        conditional_function: function() {
+            if (end_study_incorrect_responses) {
+                return true;
+            } else {
+                return false;
+            }
+        } 
+    };
+    timeline.push(end_page_conditional_incorrect_responses);
+
+    // conditional for ending study due to audio errors
+    var end_page_conditional_audio_errors = {
+        // timeline: [exit_fullscreen, send_data, end_page_audio_errors],
+        timeline: [exit_fullscreen, end_page_audio_errors],
+
+        conditional_function: function() {
+            if (end_study_audio_errors) {
+                return true;
+            } else {
+                return false;
+            }
+        } 
+    };
+    timeline.push(end_page_conditional_audio_errors);
+
+
+    var main_task_starts = {
+        type: 'instructions-hide-back-button',
+        pages: ['<p>Now your volume is at a comfortable level, you are ready to start the main tasks.<br><br>'+ 'Please do not take your headphones off.<br><br>' + '<p>After you have done this, please do not adjust the ' +
+                'volume again for the remainder of the experiment.</p>'+'Press the &#39;Next&#39; button to continue.<br><br>' + 'The task may take a few minutes to load. This is normal - please be patient!</p>'],
+        show_clickable_nav: true
+
+    }; 
+    timeline.push(main_task_starts)
+
+    jsPsych.init({
+        timeline: timeline,
+        default_iti: 1000,
+        show_progress_bar: false,
+        preload_audio: audio_stim,
+        max_load_time: 60000,
+        on_finish: function() {
+            jsPsych.data.get().push({met_HT_criteria: "yes"});
+            var results = jsPsych.data.get().json();
+            jatos.submitResultData(results, jatos.startNextComponent);
+        }
+    });
+    });
+
+</script>
+</html>
