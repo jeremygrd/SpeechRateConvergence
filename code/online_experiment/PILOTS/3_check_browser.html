@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created June 2022 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com thanks @ Becky Gilbert! 
+ // Start here with your code that uses jatos.js' variables and functions
+
+var script = document.createElement('script');
+script.onload = function () {
+};
+script.src = "https://cdn.jsdelivr.net/npm/bowser@2.5.3/es5.min.js";
+document.head.appendChild(script);
+
+
+ var jsPsych = initJsPsych({
+    default_iti: 250, 
+  
+    on_finish: function() {
+
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)
+
+    } });
+
+
+ jatos.onLoad(() => {
+
+
+// The bowser library allows fine-grained specification of browser
+// properties. Here we allow only chrome, firefox and opera on
+// desktop platforms
+
+const allowedBrowsers = {
+  desktop: {
+    chrome: '>20',
+    // firefox: '>31',
+    opera: '>50',
+  }
+};
+var redirect_url = jatos.componentJsonInput.url;
+
+var check_html = {
+  accept: '<h2>Your browser can be used for this experiment!</h2><p>Hit any key to begin the experiment</p>',
+  reject: '<h2>Your browser cannot be used for this experiment!</h2><h3>Mobile devices and Safari are not supported. Mac users can use Firefox or Chrome instead of Safari.</h3><p>If you have any questions or concerns, please contact the researcher on Prolific.</p><p>By clicking <b>any key</b> you will be redirected to the Prolific end page.</p><p>Following the validation of your submission you will be paid 0.5£ for your time.</font></p>',
+};
+
+var browser_check = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function() {
+    return check_html.accept;
+  },
+  on_start: function(browser_check) {
+    const browser = bowser.getParser(window.navigator.userAgent);
+    const isValidBrowser = browser.satisfies(allowedBrowsers);
+    console.log(browser);
+    if (isValidBrowser) {}
+    else {
+      browser_check.stimulus = check_html.reject
+    };
+  },
+  on_finish: function() {
+    const browser = bowser.getParser(window.navigator.userAgent);
+    const isValidBrowser = browser.satisfies(allowedBrowsers);
+    if (isValidBrowser) {}
+    else {
+      var result_json = jsPsych.data.get().json();
+
+     // jsPsych.endExperiment('The experiment is over')
+     jatos.submitResultData(result_json)
+     .then(jatos.endStudyAjax)
+     .then(() => { window.location.href = redirect_url });    
+    };
+  },
+  choices: "ALL_KEYS"
+};
+
+
+jsPsych.run([browser_check])
+//attentive_conditional.run([preload,end_training,block_1,break_trial])
+
+} );
+   
+
+</script>
+</html>
