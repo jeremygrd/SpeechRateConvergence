@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+
+  <script src="https://unpkg.com/jspsych@7.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.0.0"></script>
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-button-response.js"></script>
+  <script src="jspsych/dist/plugin-html-audio-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created June 2022 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com thanks @ Becky Gilbert! 
+ // Start here with your code that uses jatos.js' variables and functions
+
+
+
+ var jsPsych = initJsPsych({
+    default_iti: 250, 
+    //show_progress_bar: true,
+    //message_progress_bar: 'Completion Progress for block 1/4',
+    on_finish: function() {
+
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)
+
+    } });
+
+ jatos.onLoad(() => {
+
+
+  var timeline = [];
+
+ 
+
+  var fixcross_trial = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p style='font-size: 25px'>First we will ask you to choose which recording device</p>"+
+  "<p style='font-size: 25px'> to use for the rest of the experiment.</p>",
+            choices: ['Select Recording device'],
+};
+
+timeline.push(fixcross_trial)
+
+
+
+// mic initialization trial
+var trial_mic = {
+    type: jsPsychInitializeMicrophone
+};
+timeline.push(trial_mic)
+
+
+// explain to participants they need to make sure they can hear themselves. 
+const test_audio_instructions = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p style='font-size: 25px'>Let's make sure the test can hear you.</p>" +
+  "<p style='font-size: 25px'>Please click the button below and speak into your microphone</p>"+
+  "<p style='font-size: 25px'>for a few seconds once you see the word"+ '<p style = "color:red"><b>RECORDING...</b></p>'+
+  "<p style='font-size: 25px'>Once you are done, you will be able to play your recording by clicking on the white triangle.</p>"+
+  "<p style='font-size: 25px'>Please make sure that you can hear your recording.</p>"+
+  "<p style='font-size: 25px'>If not, please make sure your microphone is working properly and try again.</p>",
+  choices: ['Begin Recording']
+};
+
+// allow recording and playback, recording limited to 10 seconds. 
+const test_audio = {
+  type: jsPsychHtmlAudioResponse,
+    recording_duration: 10000,
+    stimulus: '<p style = "color:red"><b>RECORDING...</b></p>',
+    allow_playback: true,
+    show_done_button: true,
+    record_again_button_label: 'Record Again',
+    on_finish: function(data){
+      data.response = 'sanitized';}
+};
+
+// honor system - participants will click to move on. 
+const recording_passed = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<p>Thank you. If you are able to hear yourself in the recording, press Continue to proceed with the test.<br><br>If you are unable to hear yourself, please reload the test by clicking again on the survey link or refreshing this page. Then try connecting a different headset/microphone, or using a different browser. If you still experience difficulty, please contact Stephen: stephen.skalicky@vuw.ac.nz</p><br>',
+    choices: ['Continue'],
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+// short parts to announce reading and repeating 1
+var readrep = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus:  "<p style='font-size: 25px'><b>We are now goind to test your microphone</b></p>" + 
+              "<p style='font-size: 25px'>You will have the opportunity to record yourself, stop the recording,</p>" +
+              "<p style='font-size: 25px'> listen to the recorded extract to ensure that your microphone is properly set up.</p>"+
+              '<img class="readrep-img" src="images/mic.png" width="200" height="200">'+ 
+          "<p style='font-size: 15px'> Continue by pressing the spacebar </p>",
+  choices: " "
+};
+timeline.push(readrep);
+
+const trial_readoutloud = { 
+  type: jsPsychHtmlAudioResponse, 
+  stimulus: '<p><strong>Recording in progress...</strong></p><p>You can read out loud the following sentence if you like or say whatever you want </p><p><strong><font size="+3">And now here is my secret, a very simple secret: It is only with the heart that one can see rightly; what is essential is invisible to the eye.</font></strong></p>'+
+  '<p>Whenever you are done click on continue</p>',  
+  recording_duration: 5, 
+  stimulus_duration: null,
+  allow_playback: true,
+  show_done_button: true
+};
+timeline.push(trial_readoutloud)
+
+jsPsych.run([fixcross_trial,trial_mic,test_audio_instructions,test_audio])
+//attentive_conditional.run([preload,end_training,block_1,break_trial])
+
+} );
+   
+
+</script>
+</html>

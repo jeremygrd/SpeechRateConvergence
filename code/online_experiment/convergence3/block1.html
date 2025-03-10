@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+
+  <script src="https://unpkg.com/jspsych@7.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.0.0"></script>
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-button-response.js"></script>
+  <script src="jspsych/dist/plugin-html-audio-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created Feb 2025 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com thanks @ Becky Gilbert! 
+ // Start here with your code that uses jatos.js' variables and functions
+
+
+ var jsPsych = initJsPsych({
+    default_iti: 250, 
+    //show_progress_bar: true,
+    //message_progress_bar: 'Completion Progress for block 1/4',
+    on_finish: function() {
+
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)
+
+    } });
+
+ jatos.onLoad(() => {
+
+
+  var timeline = [];
+
+
+
+  const audioElement = document.querySelector('audio');
+ 
+  var preload = {
+    type: jsPsychPreload,
+    auto_preload: true };
+
+   timeline.push(preload)
+
+
+const audio_pathG = "audio/good.mp3"
+const audio_pathW = "audio/bad.mp3"
+ 
+// Define variable of interest
+var audio_path = 'audio/';
+
+//// modify names here 
+var conditions = ["filter_Inf_0.35","filter_5.5_Inf","filter_Inf_1.5","filter_23_Inf"]
+
+//  "filter_Inf_0.35" ==> Normal spectrally degraded  
+//  "filter_5.5_Inf"  ==> Normal temporally degraded
+//  "filter_Inf_1.5"  ==> Fast spectrally degraded
+//  "filter_23_Inf"   ==> Fast temporally degraded
+
+
+// Define specific stimuli for each part of the block
+// 1- read out loud
+var read_sentences = [
+{stim: "Where were you while we were away?",name:"r1" },
+{stim: "He remembered a story he had read as a youth.",name:"r2" }, 
+{stim: "The reasons for this dive seemed foolish now.",name:"r3" }, 
+{stim: "A good attitude is unbeatable.",name:"r4" }, 
+{stim: "That pickpocket was caught red-handed.",name:"r5" }, 
+{stim: "Even a simple vocabulary contains symbols.",name:"r6" }, 
+{stim: "The singer's finger had a splinter.",name:"r7" }, 
+{stim: "Chocolate and roses never fail as a romantic gift.",name:"r8" }, 
+{stim: "We got drenched from the uninterrupted rain.",name:"r9" }, 
+{stim: "Upgrade your status to reflect your wealth.",name:"r10" }, 
+{stim: "It's impossible to deal with bureaucracy.",name:"r11" }, 
+{stim: "Birthday parties have cupcakes and ice cream.",name:"r12" }, 
+{stim: "Scientific progress comes from the development of new techniques.",name:"r13" }, 
+{stim: "The clumsy customer spilled some expensive perfume.",name:"r14" }, 
+{stim: "The bungalow was pleasantly situated near the shore.",name:"r15" }, 
+{stim: "Too much curiosity can get you into trouble.",name:"r16" }, 
+{stim: "The water contained too much chlorine and stung his eyes.",name:"r17" }, 
+{stim: "She encouraged her children to make their own Halloween costumes.",name:"r18" }, 
+{stim: "Why else would Danny allow others to go?",name:"r19" }, 
+{stim: "Young children should avoid exposure to contagious diseases.",name:"r20" }, 
+{stim: "I gave them several choices and let them set the priorities.",name:"r21" }, 
+{stim: "His failure to open the store by eight cost him his job.",name:"r22" }, 
+{stim: "A doctor was in the ambulance with the patient.",name:"r23" }, 
+{stim: "May I order a strawberry sundae after I eat dinner?",name:"r24" }, 
+{stim: "Reading in poor light gives you eyestrain.",name:"r25" }, 
+{stim: "One even gave my little dog a biscuit.",name:"r26" }, 
+{stim: "The moment of truth is the moment of crisis.",name:"r27" }, 
+{stim: "A few years later the dome fell in.",name:"r28" }, 
+{stim: "Don't plan meals that are too complicated.",name:"r29" }, 
+{stim: "Add remaining ingredients and bring to a boil.",name:"r30" }, 
+{stim: "By that time, perhaps something better can be done.",name:"r31" }, 
+{stim: "The fear of punishment just didn't bother him.",name:"r32" }, 
+{stim: "Outside, only a handful of reporters remained.",name:"r33" }, 
+{stim: "Come on, let's hurry down before they lock up for the day.",name:"r34" },  
+{stim: "Did he ever visit here when he was a kid?",name:"r35" }, 
+{stim: "Shall we flip a coin to see which of us goes first?",name:"r36" }, 
+{stim: "They could walk, ride on a bus or be driven.",name:"r37" }, 
+{stim: "Most of us brush our teeth by hand.",name:"r38" }, 
+{stim: "Let all projects dry slowly for several days.",name:"r39" }, 
+{stim: "You need answers to four important questions.",name:"r40" }, 
+{stim: "They serve cracked wheat, oats or cornmeal.",name:"r41" }, 
+{stim: "His work began just six days after the flood.",name:"r42" }, 
+{stim: "To many experts, this trend was inevitable.",name:"r43" }, 
+{stim: "As a rule, part-time farmers hire little help.",name:"r44" }, 
+{stim: "Unless we send out the whole pie, their pieces mean nothing.",name:"r45" }, 
+{stim: "Cut off every building at the seventh floor.",name:"r46" }, 
+{stim: "A second assistant mopped with two sponges.",name:"r47" }, 
+{stim: "She blew her nose on a tissue and opened the coke bottle.",name:"r48" }, 
+];
+
+
+
+
+
+//////////////////////////////////////////// MODIFY here
+
+// 2- Read sentences, listen to these sentences and find word following gap
+var stories = [
+// story one: Cinderella
+[{ stim:"s1s1.wav", name: "1", written: "<p style='font-size: 25px'>Once upon a time there was a girl called Cinderella.</p><p style='font-size: 25px'>But everyone called her Cinders.</p>", item1:"everyonne", item2:"time",item3:"girl",correct:"everyonne"},
+{ stim:"s1s2.wav", name: "2", written: "<p style='font-size: 25px'>Cinders lived with her mother and two stepsisters called Lily and Rosa.</p><p style='font-size: 25px'>Lily and Rosa were very unfriendly and they were lazy girls.</p>", item1:"very", item2:"mother",item3:"lazy",correct:"very"},
+{ stim:"s1s3.wav", name: "3", written: "<p style='font-size: 25px'>They spent all their time buying new clothes and going to parties.</p><p style='font-size: 25px'>Poor Cinders had to wear all their old hand-me-downs!</p>", item1:"parties", item2:"clothes",item3:"poor",correct:"parties"},
+{ stim:"s1s4.wav", name: "4", written: "<p style='font-size: 25px'>And she had to do the cleaning!</p><p style='font-size: 25px'> One day, a royal messenger came to announce a ball.</p>", item1:"cleaning", item2:"day",item3:"ball",correct:"cleaning"},
+{ stim:"s1s5.wav", name: "5", written: "<p style='font-size: 25px'>The ball would be held at the Royal Palace,</p><p style='font-size: 25px'> in honour of the Queen’s only son, Prince William.</p>", item1:"palace", item2:"honour",item3:"son",correct:"palace"},
+{ stim:"s1s6.wav", name: "6", written: "<p style='font-size: 25px'>Lily and Rosa thought this was divine.</p><p style='font-size: 25px'> Prince William was gorgeous, and he was looking for a bride!</p>", item1:"looking", item2:"divine",item3:"gorgeous",correct:"looking"},
+{ stim:"s1s7.wav", name: "7", written: "<p style='font-size: 25px'>They dreamed of wedding bells!</p><p style='font-size: 25px'>When the evening of the ball arrived, Cinders had to help her sisters get ready.</p>", item1:"ball", item2:"Cinders",item3:"sisters",correct:"ball"},
+{ stim:"s1s8.wav", name: "8", written: "<p style='font-size: 25px'>They were in a bad mood.</p><p style='font-size: 25px'>They’d wanted to buy some new gowns, but their mother said that they had enough gowns.</p>", item1:"mother", item2:"gowns",item3:"mood",correct:"mother"},
+{ stim:"s1s9.wav", name: "9", written: "<p style='font-size: 25px'>So they started shouting at Cinders.</p><p style='font-size: 25px'> ’Find my jewels!’ yelled one.</p><p style='font-size: 25px'> ’Find my hat!’ howled the other.</p>", item1:"hat", item2:"jewels",item3:"other",correct:"hat"}],
+// story two: rainbow
+[{ stim:"s2s1.wav", name: "1", written: "<p style='font-size: 25px'>When the sunlight strikes raindrops in the air,</p><p style='font-size: 25px'> they act as a prism and form a rainbow.</p>", item1:"prism", item2:"rainbow",item3:"air",correct:"prism"},
+{ stim:"s2s2.wav", name: "2", written: "<p style='font-size: 25px'>The rainbow is a division of white light into many  beautiful colors.</p> ", item1:"beautiful", item2:"light",item3:"division",correct:"beautiful"},
+{ stim:"s2s3.wav", name: "3", written: "<p style='font-size: 25px'>These take the shape of a long round arch,</p><p style='font-size: 25px'> with its path high above, and its two ends apparently beyond the horizon.</p>", item1:"ends", item2:"path",item3:"arch",correct:"ends"},
+{ stim:"s2s4.wav", name: "4", written: "<p style='font-size: 25px'>There is , according to legend, a boiling pot of gold at one end.</p>", item1:"boiling", item2:"legend",item3:"gold",correct:"boiling"},
+{ stim:"s2s5.wav", name: "5", written: "<p style='font-size: 25px'>People look, but no one ever finds it.</p>", item1:"ever", item2:"look",item3:"finds",correct:"ever"},
+{ stim:"s2s6.wav", name: "6", written: "<p style='font-size: 25px'>When a man looks for something beyond his reach,</p><p style='font-size: 25px'> his friends say he is looking for the pot of gold at the end of the rainbow.</p>", item1:"reach", item2:"friends",item3:"pot",correct:"reach"}],
+// story three: The North Wind
+[{ stim:"s3s1.wav", name: "1", written: "<p style='font-size: 25px'>The North Wind and the Sun were arguing one day about which of them was stronger,</p><p style='font-size: 25px'> when a traveller came along wrapped up in an overcoat.</p> ", item1:"day", item2:"about",item3:"was",correct:"day"},
+{ stim:"s3s2.wav", name: "2", written: "<p style='font-size: 25px'>They agreed that the one who could make the traveller take his coat off</p><p style='font-size: 25px'> would be considered stronger than the other one.</p>", item1:"traveller", item2:"coat",item3:"make",correct:"traveller"},
+{ stim:"s3s3.wav", name: "3", written: "<p style='font-size: 25px'>Then the North Wind blew as hard as he could, but the harder he blew,</p><p style='font-size: 25px'>the tighter the traveller wrapped his coat around him</p>", item1:"blew", item2:"harder",item3:"tighter",correct:"blew"},
+{ stim:"s3s4.wav", name: "4", written: "<p style='font-size: 25px'>and at last the North Wind gave up trying.</p>", item1:"Wind", item2:"last",item3:"up",correct:"Wind"},
+{ stim:"s3s5.wav", name: "5", written: "<p style='font-size: 25px'>Then the Sun began to shine hot,</p><p style='font-size: 25px'>and right away the traveller took his coat off.</p>", item1:"traveller", item2:"away",item3:"coat",correct:"traveller"},
+{ stim:"s3s6.wav", name: "6", written: "<p style='font-size: 25px'>And so the North Wind had to admit that the Sun was stronger than he was.</p>", item1:"Sun", item2:"stronger",item3:"admit",correct:"Sun"}],
+// story four: 
+[{ stim:"s4s1.wav", name: "1", written: "<p style='font-size: 25px'>One fine day it occurred to the Members of the Body that</p><p style='font-size: 25px'> they were doing all the work and the Belly was having all the food.</p>", item1:"Body", item2:"work",item3:"members",correct:"Body"},
+{ stim:"s4s2.wav", name: "2", written: "<p style='font-size: 25px'>So they held a meeting, and after a long  discussion,</p><p style='font-size: 25px'>they decided to go on strike until the Belly agreed to do its proper share of the work.</p>", item1:"discussion", item2:"strike",item3:"Belly",correct:"discussion"},
+{ stim:"s4s3.wav", name: "3", written: "<p style='font-size: 25px'>So for a day or two, the Hands refused to pick up food,</p><p style='font-size: 25px'> the Mouth refused to receive it, and the Teeth had no work to do.</p>", item1:"Teeth", item2:"Mouth",item3:"work",correct:"Teeth"},
+{ stim:"s4s4.wav", name: "4", written: "<p style='font-size: 25px'>But after a few days the Members began to find that</p><p style='font-size: 25px'> they themselves were not in a very active condition</p>", item1:" themselves", item2:"find",item3:"active",correct:" themselves"},
+{ stim:"s4s5.wav", name: "5", written: "<p style='font-size: 25px'>the Hands could hardly move, and the Mouth was all parched and dry,</p><p style='font-size: 25px'> while the Legs were unable to support the rest.</p>", item1:"dry", item2:"Legs",item3:"Mouth",correct:"dry"},
+{ stim:"s4s6.wav", name: "6", written: "<p style='font-size: 25px'>And so they realised that even the Belly in its</p><p style='font-size: 25px'> dull quiet way was doing necessary work for the Body.</p>", item1:"necessary", item2:"dull",item3:"work",correct:"necessary"}]
+
+];
+
+
+
+
+
+// 3- listen and repeat (convergence part)
+var converge = [
+{ stim:"frm01_s01.wav", name: "frm01_s01", written: "If it doesn't matter who wins why do we keep score"},
+{ stim:"frm01_s02.wav", name: "frm01_s02", written: "Stop each car if it's little"},
+{ stim:"frm01_s03.wav", name: "frm01_s03", written: "Play in the street up ahead"},
+{ stim:"frm01_s04.wav", name: "frm01_s04", written: "A fifth wheel caught speeding"},
+{ stim:"frm01_s05.wav", name: "frm01_s05", written: "It's been about two years since Davey kept shotguns"},
+{ stim:"frm01_s06.wav", name: "frm01_s06", written: "Charlie did you think to measure the tree"},
+{ stim:"frm01_s07.wav", name: "frm01_s07", written: "Tina got cued to make a quicker escape"},
+{ stim:"frm01_s08.wav", name: "frm01_s08", written: "Joe books very few judges"},
+{ stim:"frm01_s09.wav", name: "frm01_s09", written: "Here I was in Miami and Illinois"},
+{ stim:"frm01_s10.wav", name: "frm01_s10", written: "She had your dark suit in greasy wash water all year"},
+{ stim:"frm01_s11.wav", name: "frm01_s11", written: "Don't ask me to carry an oily rag like that"},
+{ stim:"frm01_s12.wav", name: "frm01_s12", written: "A boring novel is a superb sleeping pill"},
+{ stim:"frm01_s13.wav", name: "frm01_s13", written: "Call an ambulance for medical assistance"},
+{ stim:"frm01_s14.wav", name: "frm01_s14", written: "We saw eight tiny icicles below our roof"},
+{ stim:"frm01_s15.wav", name: "frm01_s15", written: "Each untimely income loss coincided with the breakdown of a heating system part"},
+{ stim:"frm01_s16.wav", name: "frm01_s16", written: "Jeff thought you argued in favor of a centrifuge purchase"},
+{ stim:"frm01_s17.wav", name: "frm01_s17", written: "The sermon emphasized the need for afirmative action"},
+{ stim:"frm01_s18.wav", name: "frm01_s18", written: "Kindergarten children decorate their classrooms for all holidays"},
+{ stim:"frm01_s19.wav", name: "frm01_s19", written: "Cory and Trish played tag with beach balls for hours"},
+{ stim:"frm01_s20.wav", name: "frm01_s20", written: "The frightened child was gently subdued by his big brother"},
+{ stim:"frm01_s21.wav", name: "frm01_s21", written: "The tooth fairy forgot to come when Roger's tooth fell out"},
+{ stim:"frm01_s22.wav", name: "frm01_s22", written: "Alice's ability to work without supervision is noteworthy"},
+{ stim:"frm01_s23.wav", name: "frm01_s23", written: "Special task forces rescue hostages from kidnappers"},
+{ stim:"frm01_s24.wav", name: "frm01_s24", written: "If Carol comes tomorrow have her arrange for a meeting at two"},
+{ stim:"frm01_s25.wav", name: "frm01_s25", written: "Military personnel are expected to obey government orders"},
+{ stim:"frm01_s26.wav", name: "frm01_s26", written: "Laugh dance and sing if fortune smiles upon you"},
+{ stim:"frm01_s27.wav", name: "frm01_s27", written: "The fish began to leap frantically on the surface of the small lake"},
+{ stim:"frm01_s28.wav", name: "frm01_s28", written: "The easygoing zoologist relaxed throughout the voyage"},
+{ stim:"frm01_s29.wav", name: "frm01_s29", written: "Brush fires are common in the dry underbrush of Nevada"},
+{ stim:"frm01_s30.wav", name: "frm01_s30", written: "How much will it cost to do any necessary modernizing and redecorating"},
+{ stim:"frm01_s31.wav", name: "frm01_s31", written: "Was she just naturally sloppy about everything but her physical appearance"},
+{ stim:"frm01_s32.wav", name: "frm01_s32", written: "Is a relaxed home atmosphere enough to help her outgrow these traits"},
+{ stim:"frm01_s33.wav", name: "frm01_s33", written: "The same shelter could be built into an embankment or below ground level"}
+];
+// 4- Same as 1 read out loud
+
+
+// Randomize and extract the proper number of stimuli for each part of the block 
+
+// shuffle trials
+var randtrials_read = jsPsych.randomization.sampleWithoutReplacement(read_sentences, read_sentences.length);
+// randomise stories but keeep same order for sentences obviously
+var randtrials_stories = jsPsych.randomization.sampleWithoutReplacement(stories, stories.length);
+var randtrials_converge= jsPsych.randomization.sampleWithoutReplacement(converge, converge.length);
+// Determine the experimental manipulation of the entire block [ "Natural_Normal","Natural_Fast","Artificial_slow","Artificial_fast"]
+var randcond = jsPsych.randomization.sampleWithoutReplacement(conditions, conditions.length);
+
+// Subselect the stimuli for only this block
+var cond_part1 = randcond.splice(0, 1); //should be 1 because only one condition per block
+var readstim_part1 = randtrials_read.splice(0, 6); //should be 6 because six sentences to read in the first part
+var stories_part1 = randtrials_stories.splice(0, 1); // should be 1 because there is only 1 storie to listen to
+var converge_part1 = randtrials_converge.splice(0, 8); // should be 8 because there are 8 sentences in the convergence part
+var readstim_part2 = randtrials_read.splice(0, 6); //should be 6 because six sentences to read in the first part
+
+// console.log(audio_path+ cond_part1+ '/' + cond_part1+ '_'+ stories_part1[0][0].stim)
+
+
+// Proper experiment design coding 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// mic initialization trial
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+var trial_mic = {
+    type: jsPsychInitializeMicrophone,
+    data: { trial_id: 'uselessblock1'}
+
+ 
+};
+timeline.push(trial_mic)
+
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// short parts to announce block 1
+///////////////////////////////////////////////////////////////////////////////////
+var intro = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:
+              "<p style='font-size: 25px'><b> Welcome to the first block of the main experiment</b></p>" + 
+              "<p style='font-size: 25px'> You will now perform tasks similar to the ones</p>"+
+              "<p style='font-size: 25px'> you have already done during the training session.</p>" +
+              "<p style='font-size: 25px'> If the audio sounds strange but you had no issues during</p>"+
+              "<p style='font-size: 25px'> the training session, do not worry.</p>"+
+              "<p style='font-size: 25px'> This is expected and the experiment is working correctly.</p>" ,
+  choices: ["Start main Experiment"],
+  data: { trial_id: 'uselessblock1'}
+
+};
+timeline.push(intro);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce reading and repeating 1
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+var readrep = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Main Experiment Block 1/4</p>" +
+              "<p style='font-size: 25px'>Welcome to <b>task n° 1</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>read 6 sentences aloud.</b></p>" +
+              '<img class="readrep-img" src="images/readrep.jpg" width="200" height="200">',
+  choices: ["Continue"],
+  data: { trial_id: 'uselessblock1'}
+
+};
+
+timeline.push(readrep);
+var cur_count = 0
+// read out loud trials part 1
+for (values of readstim_part1) {
+cur_count+= 1
+var fixcross_trial = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: '<p><font size="+2">First <strong>carefully</strong> read the sentence and then repeat it aloud.</p></font>'+
+            '<p>Sentence:'+cur_count+"/6</p>" 
+           ,
+            choices: ['Begin Recording'],
+            data: { trial_id: 'before_read&repeat1block1'}
+
+            
+};
+const trial_readoutloud = { 
+  type: jsPsychHtmlAudioResponse, 
+  stimulus: '<p style = "color:red"><b>RECORDING...</b></p><p><strong><font size="+3">' +values.stim+'</font></strong></p>'
+  ,  
+  recording_duration: 15000, 
+  allow_playback: true,
+  show_done_button: true,
+  record_again_button_label: 'Record Again',
+  data: { trial_id: 'read&repeat1block1' ,
+    stim_name: values.stim
+  }
+};
+ timeline.push(fixcross_trial)
+ timeline.push(trial_readoutloud)
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce detect word following a silent gap part
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var lisen = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Main Experiment Block 1/4</p>" + 
+              "<p style='font-size: 25px'>Welcome to <b>task n° 2</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>read a sentence</b>.</p>" +
+              "<p style='font-size: 25px'> and listen to a degraded version of it.</b></p>" +
+              "<p style='font-size: 25px'>A short silent gap was added to the sentence</p>" +
+              "<p style='font-size: 25px'>You will be asked to report the word that followed this short silent gap</p>" +
+              '<img class="readrep-img" src="images/lisennew.png" width="200" height="200">',
+  choices: ["Continue"],
+  data: { trial_id: 'uselessblock1'}
+
+};
+
+timeline.push(lisen);
+
+
+
+var curry_count = 0
+// read out loud trials part 1
+for (values of stories_part1[0]) {
+curry_count+= 1
+
+var trialsentenceRead = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<p style="font-size: 25px;">'+ values.written+ '</p>',
+    choices: ["listen sentence"],
+    data: { trial_id: 'read_beforegapblock1'}
+
+}; 
+timeline.push(trialsentenceRead)
+// console.log(audio_path+ cond_part1+ '/' + cond_part1+ '_'+ values.stim)
+console.log(stories_part1)
+var trialsentenceListen = {
+  type: jsPsychAudioKeyboardResponse,
+  stimulus: audio_path+ cond_part1+ '/' + cond_part1+ '_'+ values.stim,
+choices: "NO_KEYS", 
+trial_ends_after_audio: true,
+data: { trial_id: 'listengapblock1',
+  stim_presented: audio_path+ cond_part1+ '/' +cond_part1+ '_'+  values.stim
+}
+
+}
+timeline.push(trialsentenceListen)
+
+let responses = jsPsych.randomization.shuffle([values.item1, values.item2, values.item3]);
+var trialanswerwhere = {
+  type: jsPsychHtmlButtonResponse,
+
+  data: {trial_id: "gap_answerblock1" ,
+  stim_presented: audio_path+ cond_part1+ '/' + cond_part1+ '_'+ values.stim,
+  item1: values.item1,
+  item2: values.item2,
+  item3: values.item3,
+  target: values.correct},
+  
+  stimulus:   "<p style='font-size: 25px'> Which of the following words directly followed the silent gap?</b></p>",
+  choices: responses,
+  on_finish: function(data) {
+    let correctAnswer = data.target;
+    let selectedIndex = data.response;
+    console.log(selectedIndex);
+
+    let selectedButtonText = responses[selectedIndex]; 
+    console.log(selectedButtonText);
+
+    if (selectedButtonText == correctAnswer) {
+        jsPsych.data.get().addToLast({sound: audio_pathG,suj_response:selectedButtonText}) 
+    } else {
+      jsPsych.data.get().addToLast({sound: audio_pathW,suj_response:selectedButtonText})
+    }
+  },
+};
+  
+timeline.push(trialanswerwhere)
+
+
+
+var playgood = {
+  type: jsPsychAudioKeyboardResponse,
+  stimulus: function () {
+    // Get the last trial's response
+    let lastTrial = jsPsych.data.getLastTrialData().values()[0];
+    return lastTrial.sound;
+  },
+choices: "NO_KEYS", // Don't require a response
+trial_ends_after_audio: true,
+data:{trial_id: 'uselessblock1'}
+}
+timeline.push(playgood)
+
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce convergence
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var lisenrep = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Main Experiment Block 1/4</p>" +
+              "<p style='font-size: 25px'>Welcome to <b>task n° 3</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>listen to different sentences and then repeat them.</b></p>" +
+              "<p style='font-size: 25px'> However you will not have the opportunity to listen to, or change your recording.</b></p>" +
+              '<img class="readrep-img" src="images/listenrep.png" width="200" height="200">',
+  choices: ["Continue"],
+  data: { trial_id: 'uselessblock1'}
+
+};
+
+timeline.push(lisenrep);
+// convergence trials
+
+
+var cur_rep = 0;
+for (values of converge_part1) {
+  cur_rep +=1
+  var previens2 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:
+              
+              "<p style='font-size: 25px'> Be ready to listen to the next sentence.</p>"+
+              '<p>Sentence:'+cur_rep+"/8</p>",
+  choices: ["listen to the sentence"],
+  data: { trial_id: 'uselessblock1'}
+};
+var trial_listen_repI = {
+  type: jsPsychAudioButtonResponse,
+  stimulus: audio_path+ cond_part1+ '/' + cond_part1+ '_'+ values.stim,
+  prompt: "<p style='font-size: 25px'>" + values.written + "</p>",
+  choices: ['Continue'],
+  response_allowed_while_playing: false,
+  trial_ends_after_audio: true,
+  data: { trial_id: 'before_convergenceblock1',
+  presented_stim: audio_path+ cond_part1+ '/' + cond_part1+ '_'+ values.stim,
+  stim_name: values.writen
+  }
+};
+
+const trial_listen_repII = {
+ type: jsPsychHtmlAudioResponse,
+ stimulus: '<p style = "color:red"><b>RECORDING...</b></p>' +
+ //'<p><strong><font size="+2"> Please repeat the previous sentence</font></strong></p>'+
+ "<p style='font-size: 25px'>" + values.written + "</p>" +
+ '<p>Whenever you are done click on continue</p>', 
+ recording_duration: 15000, 
+ stimulus_duration: null,
+//allow_playback: true,
+  show_done_button: true,
+  data: { trial_id: 'convergenceblock1',
+    presented_stim: audio_path+ cond_part1+ '/' + cond_part1+ '_'+ values.stim,
+    stim_name: values.writen
+   }
+
+};
+timeline.push(previens2)
+timeline.push(trial_listen_repI)
+timeline.push(trial_listen_repII)
+
+};
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce reading and repeating 2
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var readrep2 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Main Experiment Block 1/4</p>" +
+              "<p style='font-size: 25px'>Welcome to <b>task n° 4</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>read 6 sentences aloud.</b></p>" +
+              '<img class="readrep-img" src="images/readrep.jpg" width="200" height="200">',
+  choices: ["Continue"],
+  data: {trial_id: 'uselessblock1'},
+};
+timeline.push(readrep2);
+
+var cur_count2 = 0
+
+// read out loud trials part 2
+for (values of readstim_part2) {
+
+cur_count2 +=1
+var fixcross_trial = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: '<p><font size="+2">First <strong>carefully</strong> read the sentence and then repeat it aloud.</p></font>'+
+            '<p>Sentence:'+cur_count2+"/6</p>" ,
+  choices: ["Continue"],
+  data: { trial_id: 'before_read&repeat2block1'}
+
+};
+const trial_readoutloud = { 
+  type: jsPsychHtmlAudioResponse, 
+  stimulus: '<p style = "color:red"><b>RECORDING...</b></p><p><strong><font size="+3">' +values.stim+'</font></strong></p>'
+  ,  
+  recording_duration: 15000, 
+  allow_playback: true,
+  show_done_button: true,
+  record_again_button_label: 'Record Again',
+  data: { trial_id: 'read&repeat2block1' ,
+    stim_name: values.stim
+  }
+
+};
+timeline.push(fixcross_trial)
+timeline.push(trial_readoutloud)
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// end block 1
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var ending_trial = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p style='font-size: 25px'> You have now finished Block 1 out of 4.</p>",
+  choices: ["Continue to Block 2"],
+  response_ends_trial: true,
+  data: { trial_id: 'uselessblock1'} ,
+
+  
+};
+timeline.push(ending_trial)
+
+
+
+var block_1 = {
+    timeline: timeline};
+
+  
+
+// Save stimuli sequences for the next blocks
+
+jatos.studySessionData.randcond = randcond;
+jatos.studySessionData.randtrials_read = randtrials_read;
+jatos.studySessionData.randtrials_stories = randtrials_stories;
+jatos.studySessionData.randtrials_converge = randtrials_converge;
+
+
+
+jsPsych.run([block_1])
+
+} );
+   
+
+</script>
+</html>

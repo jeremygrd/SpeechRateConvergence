@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Eligibility Questionnaire</title>
+  <script src = "js/jquery.min.js" type="text/javascript"></script>
+  <script src = "jspsych-6.1.0/jspsych.js" type="text/javascript"></script>
+  <script src = "jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js" type="text/javascript"></script>
+  <script src = "jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+  <script src = "jspsych-6.1.0/plugins/jspsych-survey-html-form.js"></script>
+  <script src = "jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+  <script src = "jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+  <script src = "jatos.js"></script>
+  <link rel="stylesheet" type="text/css" href="jspsych-6.1.0/css/jspsych.css">
+  <link rel="stylesheet" type="text/css" href="css/questions.css">
+  <style type="text/css">
+        .jspsych-content {margin: auto; width: 65%; align-content: center; text-align: center; font-size: 15px;} 
+        .jspsych-btn {margin-bottom: 20%; border-width: medium; text-align: center; border-color: rgb(67,67,67)}
+        #jspsych-survey-multi-choice-questions {text-align: center;}*/
+      </style>
+</head>
+<body>
+</body>
+<script>
+
+var timeline = [];
+var end_study_incorrect_responses = false;
+
+
+
+var language_options = ["Yes","No"];
+
+var demographics_multi_choice = {
+  type: 'survey-multi-choice',
+  preamble: "<div class='title'<strong><font size=6px>Please answer the following questions</font></div>",
+  questions: [
+    {prompt: "<div class='boxed'><strong>Did your microphone work properly?</strong></div>", name: 'mic_q', options: language_options, required:true, horizontal: true}, 
+  ],
+    on_finish: function(data) {
+    // at the end of this trial (after the person responds to the question and clicks the continue button),
+    // check if they said 'No' - if so, then 'end_study_incorrect_responses' is true and we want to show
+    // the conditional end study message.
+    console.log('responses: ', data.responses);
+    if(JSON.parse(data.responses).mic_q == 'Yes'){
+      end_study_incorrect_responses = false; 
+    } else {
+      end_study_incorrect_responses =true;
+    }
+  }
+};
+timeline.push(demographics_multi_choice);
+
+
+ var end_page_incorrect_responses = {
+   type: 'html-keyboard-response',
+   stimulus: '<p><font size=5px>You did not meet the criteria for this study, so the study has ended.</p><p>If you have any questions or concerns, please contact the researcher on Prolific.</p><p>You can end this session by closing your browser tab or window.</font></p>',
+   choices: jsPsych.NO_KEYS,
+   on_finish: function() {
+//     // if the participant gets this message, then the code below will send their data back to the server
+//     // and end their study, even though they will be 'stuck' on this page and will have to close the browser tab.
+     var result_json = jsPsych.data.get().json();
+     jatos.submitResultData(result_json, jatos.endStudyAjax);
+   }
+ };
+
+ var end_page_conditional_incorrect_responses = {
+   timeline: [end_page_incorrect_responses],
+   conditional_function: function() {
+     if (end_study_incorrect_responses) {
+       return true;
+     } else {
+       return false;
+     }
+   } 
+ };
+ timeline.push(end_page_conditional_incorrect_responses);
+
+
+ var end_page_incorrect_responses = {
+   type: 'html-keyboard-response',
+   stimulus: '<p><font size=5px>You did not meet the criteria for this study, so the study has ended.</p><p>You will be paid £0.50 for 5 minutes of your time.</p><p>If you have any questions or concerns, please contact the researcher on Prolific.</p><p>You can end this session by closing your browser tab or window.</font size></p>',
+   choices: jsPsych.NO_KEYS,
+   on_finish: function() {
+     // if the participant gets this message, then the code below will send their data back to the server
+//     // and end their study, even though they will be 'stuck' on this page and will have to close the browser tab.
+     var result_json = jsPsych.data.get().json();
+     jatos.submitResultData(result_json, jatos.endStudyAjax);
+   }
+ };
+
+ var end_page_conditional_incorrect_responses = {
+   timeline: [end_page_incorrect_responses],
+   conditional_function: function() {
+     if (end_study_incorrect_responses) {
+       return true;
+     } else {
+       return false;
+     }
+   } 
+ };
+ timeline.push(end_page_conditional_incorrect_responses);
+
+jatos.onLoad(function() {
+
+  jsPsych.data.addProperties({
+    jatos_study_ID: jatos.studyId,
+    jatos_component_ID: jatos.componentId,
+    jatos_component_result_ID: jatos.componentResultId,
+    jatos_worker_ID: jatos.workerId,
+    jatos_study_result_ID: jatos.studyResultId,
+  });
+
+  jsPsych.init({
+    timeline: timeline,
+    default_iti: 0,
+    show_progress_bar: false,
+    on_finish: function() {
+      var result_json = jsPsych.data.get().json();
+      jatos.submitResultData(result_json, jatos.startNextComponent);
+    }
+  });
+
+});
+</script>
+</html>

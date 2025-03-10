@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../online_experiment/jspsych/dist/jspsych.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-instructions.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-survey-text.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="../online_experiment/jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="../online_experiment/jspsych/dist/jspsych.css">
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created June 2022 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com thanks @ Becky Gilbert! 
+  var jsPsych = initJsPsych({
+    default_iti: 250, 
+    on_finish: function() {
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)}
+  });
+ 
+  var preload = {
+    type: jsPsychPreload,
+    auto_preload: true };
+
+
+  var timeline = [];
+//  align-items: center; align-content: left; justify-content: center;text-align: justify;text-justify: inter-word;
+// Create instructions thanks @ Alberte Seeberg
+// https://github.com/alberteseeberg/Online_groove/blob/main/groove_experiment.js
+var instructions = {
+      type: jsPsychInstructions,
+      pages: [
+      '<h1><b>Welcome to this perceptual experiment!</b></h1>'+
+      "<div style='text-align: justify;text-align-last: center;'><p style='text-align: justify; margin-left: 18%;margin-right: 18%'>We kindly ask you to sit in a <b>quiet</b> room for the duration of this experiment. Please use the best quality headphones that you have access to. For the next 30 minutes, you will perform 4 different tasks that include spoken and written sentences. You will be asked to read, repeat and listen to these sentences. The different tasks will be explained in details. First, you are required to give your consent to take part in the study. You will also complete a short questionnaire related to your language abilities. Next, you will be able to adjust the sound volume to your preference before beginning the experiment. You will then complete a short test to be sure that you are wearing headphones. You will have the possibility to make sure that your microphone is working. You will start with some example trials to get familiar with the task. Then you will continue to the main experiment where the task is exactly the same. At multiple points you will have the opportunity to take breaks to stay focussed throughout the experiment.</p></div>" +
+       "<p>Please click 'Next', to access the consent form.</p>"],
+        show_clickable_nav: true 
+      };
+
+timeline.push(instructions)
+
+   
+jsPsych.run([preload, instructions]); 
+
+
+
+  
+</script>
+</html>

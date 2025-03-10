@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="jspsych/dist/jspsych.js"></script>
+
+  <script src="https://unpkg.com/jspsych@7.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.0.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.0.0"></script>
+  <script src="jspsych/dist/plugin-audio-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-slider-response-no-thumb.js"></script>
+  <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/dist/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugin-audio-button-response.js"></script>
+  <script src="jspsych/dist/plugin-html-audio-response.js"></script>
+  <script src="jspsych/dist/plugin-survey-Likert.js"></script>
+  <script src="jspsych/dist/plugin-preload.js"></script>
+  <link rel="stylesheet" href="jspsych/dist/jspsych.css">
+  <script src="jatos.js"></script>
+</head>
+<body></body>
+<script>
+// created Feb 2025 @ Cambridge  Jérémy Giroud: jeremy.giroud@gmail.com thanks @ Becky Gilbert! 
+
+ var jsPsych = initJsPsych({
+    default_iti: 250, 
+    //show_progress_bar: true,
+    //message_progress_bar: 'Completion Progress for block 1/4',
+    on_finish: function() {
+
+      jatos.submitResultData(jsPsych.data.get().json(), jatos.startNextComponent)
+
+    } });
+
+ jatos.onLoad(() => {
+
+
+  var timeline = [];
+
+ 
+const audio_pathG = "audio/good.mp3"
+const audio_pathW = "audio/bad.mp3"
+
+var conds = ["filter_Inf_0.35","filter_5.5_Inf","filter_Inf_0.35","filter_5.5_Inf"]
+
+var conds = jsPsych.randomization.sampleWithoutReplacement(conds, conds.length);
+ 
+const audioElement = document.querySelector('audio');
+
+
+var preload = {
+    type: jsPsychPreload,
+    auto_preload: true };
+
+
+timeline.push(preload)
+
+
+
+var audio_path_tr = 'audio/training/';
+
+
+// Define specific stimuli for each part of the block
+// 1- read out loud
+read_sentences_tr = [
+{stim: "It's easy to tell the depth of a well.",name:"tr1" },
+{stim: "These days a chicken leg is a rare dish.",name:"tr2" }, 
+{stim: "The box was thrown beside the parked truck.",name:"tr3" }, 
+{stim: "Rice is often served in round bowls.",name:"tr4" }
+];
+
+// 2- listen to a story
+stories_tr = [
+{ stim:"s1s1t.wav", name: "1t", written: "Go ahead and bet the house! She replied.", item1:"house", item2:"she",item3:"bet",correct:"house"},
+{ stim:"s1s2t.wav", name: "2t", written: "It was this confidence and concentration that had taken King to the top.", item1:"concentration", item2:"confidence",item3:"King",correct:"concentration"},
+{ stim:"s1s3t.wav", name: "3t", written: "She was twenty nine and had already won ten Ground slams single titles.", item1:"ten", item2:"titles",item3:"won",correct:"ten"}]
+
+
+// 3- listen and repeat (convergence part)
+converge_tr = [
+{ stim:"sentence1.wav", name: "tr_s01", written: "It seems like we'd be wise to act while the window is open."},
+{ stim:"sentence2.wav", name: "tr_s02", written: "He believes it could happen within decades."},
+{ stim:"sentence3.wav", name: "tr_s03", written: "It's a non-zero possibility."},
+{ stim:"sentence4.wav", name: "tr_s04", written: "Where is everybody else? Something's not right."},
+];
+// 4- Same as 1 read out loud
+
+
+// Subselect the stimuli for only this block
+var readstim_tr1 = read_sentences_tr.splice(0, 2); //should be 2 because two sentences to read in the training part
+var stories_tr = stories_tr.splice(0, 3); // should be 3 because there is only 3 short sentences to listen to
+var converge_tr = converge_tr.splice(0, 2); // should be 2 because there are 2 sentences in the convergence part
+var readstim_tr2 = read_sentences_tr.splice(0, 2); //should be 2 because six sentences to read in the training part
+
+// Proper experiment design coding 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// mic initialization trial
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+var trial_mic = {
+    type: jsPsychInitializeMicrophone
+};
+timeline.push(trial_mic)
+
+
+
+// short parts to announce reading and repeating 1
+var introtrain = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: 
+              "<p style='font-size: 25px'>Welcome to the training part of the experiment</p>" + 
+              "<p style='font-size: 25px'> You will have the opportunity to familiarise yourself with </p>" + 
+              "<p style='font-size: 25px'>the different tasks that form the main experiment</p>",
+  choices: ["Start training session"],
+  data: { trial_id: 'uselesstraining'}
+
+};
+
+timeline.push(introtrain);
+
+
+
+// short parts to summarize the tasks participants will have to perform
+var re_explain_train = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: 
+              "<p style='font-size: 25px'>This experiment is composed of 4 different tasks:</p>" + 
+              "<p style='font-size: 25px'>1) Reading sentences aloud</p>" + 
+              "<p style='font-size: 25px'>2) Reading sentences and listen to filtered versions of these sentences</p>"+
+                "<p style='font-size: 25px'>  which contain a short silent gap.</p>" + 
+              "<p style='font-size: 25px'> Indicating which word followed the silent gap.</p>"+ 
+              "<p style='font-size: 25px'>3) Listening to, and repeating, sentences </p>"+ 
+              "<p style='font-size: 25px'>4) Reading sentences aloud</p>"+ 
+              "<p style='font-size: 25px'>Do not be surprised if the audio sounds unusual.</p>"+ 
+              "<p style='font-size: 25px'>A specific filtering method has been applied to the audio excerpts.</p>"+ 
+              "<p style='font-size: 25px'><b>Let's practice!</b></p>",
+  choices: ["Start training session"],
+  data: { trial_id: 'uselesstraining'}
+
+};
+
+timeline.push(re_explain_train);
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce reading and repeating 1
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+var readrep_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Training Block</p>" +
+              "<p style='font-size: 25px'>Welcome to <b>task n° 1</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>read 2 sentences aloud.</b></p>" +
+              '<img class="readrep-img" src="images/readrep.jpg" width="200" height="200">',
+  choices: ["Continue"],
+  data: { trial_id: 'uselesstraining'}
+
+};
+
+timeline.push(readrep_tr);
+
+
+// explain to participants they need to make sure they can hear themselves. 
+const test_audio_instructions_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p style='font-size: 25px'>Whenever you see the word <b>RECORDING...</b> your speech will be automatically recorded.</p>" +
+  "<p style='font-size: 25px'>Please read the sentence silently first, then read it aloud.</p>" +
+  "<p style='font-size: 25px'>Once you are done, click on 'Continue'.</p>" +
+  "<p style='font-size: 25px'>You will be able to play your recording by clicking on the triangle.</p>" +
+  "<p style='font-size: 25px'>If you are happy with the recording, you may go on.</p>" +
+   "<p style='font-size: 25px'> If not, you can record yourself again by clicking the 'Record Again' button.</p>",
+  choices: ['Begin Recording'],
+  data: { trial_id: 'uselesstraining'}
+
+};
+
+timeline.push(test_audio_instructions_tr);
+
+
+
+var cur_count = 0
+// read out loud trials part 1
+for (values of readstim_tr1) {
+cur_count+= 1
+var fixcross_trial_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: '<p><font size="+2">First <strong>carefully</strong> read the sentence and then repeat it aloud</p></font>'+
+            '<p>Sentence:'+cur_count+"/2</p>" 
+           ,
+            choices: ['Begin Recording'],
+            data: { trial_id: 'before_read&repeat1training'}
+
+};
+const trial_readoutloud_tr = { 
+  type: jsPsychHtmlAudioResponse, 
+  stimulus: '<p style = "color:red"><b>RECORDING...</b></p><p><strong><font size="+3">' +values.stim+'</font></strong></p>'
+  ,  
+  recording_duration: 15000, 
+  allow_playback: true,
+  show_done_button: true,
+  record_again_button_label: 'Record Again',
+
+
+  data: { trial_id: 'read&repeat1training',
+  stim_name: values.stim
+
+   }
+
+};
+timeline.push(fixcross_trial_tr)
+timeline.push(trial_readoutloud_tr)
+};
+
+
+// short parts to announce find gap part
+var lisen_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Training Block </p>" + 
+              "<p style='font-size: 25px'>Welcome to <b>task n° 2</b></p>" + 
+              "<p style='font-size: 25px'> 1) You will be asked to <b>read carefully a sentence</b>.</p>" +
+              "<p style='font-size: 25px'> 2) You will be presented with a spoken version of the same sentence that contains a short silent gap.</p>" +
+              "<p style='font-size: 25px'> 3) You will be asked to select the word that directly followed the silent gap.</p>" +
+              '<img class="readrep-img" src="images/lisennew.png" width="200" height="200">',
+  choices: ["Continue"],
+  data: { trial_id: 'uselesstraining'}
+
+};
+
+timeline.push(lisen_tr);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Find gap part
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var lecount =  0
+
+for (values of stories_tr) {
+lecount +=1; 
+var trialsentenceRead = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<p style="font-size: 25px;">'+ values.written+ '</p>',
+    choices: ["listen sentence"],
+    data: { trial_id: 'read_beforegaptraining'}
+
+}; 
+timeline.push(trialsentenceRead)
+
+var trialsentenceListen = {
+  type: jsPsychAudioKeyboardResponse,
+  stimulus: audio_path_tr + conds[lecount]+'_'+ values.stim,
+choices: "NO_KEYS", 
+trial_ends_after_audio: true,
+data: { trial_id: 'listengaptraining',
+  stim_presented: audio_path_tr + conds[lecount]+'_'+ values.stim
+}
+}
+timeline.push(trialsentenceListen)
+
+let responses = jsPsych.randomization.shuffle([values.item1, values.item2, values.item3]);
+var trialanswerwhere = {
+  type: jsPsychHtmlButtonResponse,
+
+  data: {trial_id: "gap_answertraining" ,
+  item1: values.item1,
+  item2: values.item2,
+  item3: values.item3,
+target: values.correct},
+
+  stimulus:   "<p style='font-size: 25px'> Which of the following words directly followed the silent gap?</b></p>",
+  choices: responses,
+  on_finish: function(data) {
+    let correctAnswer = data.target;
+    let selectedIndex = data.response;
+    console.log(selectedIndex);
+
+    let selectedButtonText = responses[selectedIndex]; 
+    console.log(selectedButtonText);
+
+    if (selectedButtonText == correctAnswer) {
+        jsPsych.data.get().addToLast({sound: audio_pathG,suj_response:selectedButtonText }) 
+    } else {
+      jsPsych.data.get().addToLast({sound: audio_pathW,suj_response:selectedButtonText})
+    }
+  },
+};
+
+
+timeline.push(trialanswerwhere)
+
+var playgood = {
+  type: jsPsychAudioKeyboardResponse,
+  stimulus: function () {
+    // Get the last trial's response
+    let lastTrial = jsPsych.data.getLastTrialData().values()[0];
+    return lastTrial.sound;
+  },
+choices: "NO_KEYS", // Don't require a response
+trial_ends_after_audio: true,
+data:{trial_id: 'uselesstraining'}
+
+}
+timeline.push(playgood)
+
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce convergence
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var lisenrep_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Training Block </p>" +
+              "<p style='font-size: 25px'>Welcome to <b>task n° 3</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>listen to different sentences and then repeat them</b>.</p>" +
+              "<p style='font-size: 25px'> However you will <b>not</b> have the opportunity to listen to, or change your recording.</b></p>" +
+              '<img class="readrep-img" src="images/listenrep.png" width="200" height="200">',
+  choices: ["Continue"],
+  data: { trial_id: 'uselesstraining'}
+
+};
+
+timeline.push(lisenrep_tr);
+
+
+// convergence trials
+var cur_rep =0;
+for (values of converge_tr) {
+
+cur_rep +=1
+
+var trial_listen_repI_tr = {
+  type: jsPsychAudioButtonResponse,
+  stimulus: audio_path_tr+ conds[cur_rep]+'_'+values.stim,
+  prompt: "<p style='font-size: 25px'>" + values.written + "</p>",
+  choices: ['Continue'],
+  response_allowed_while_playing: false,
+  trial_ends_after_audio: true,
+  data: { trial_id: 'before_convergencetraining',
+  presented_stim: audio_path_tr+ conds[cur_rep]+'_'+ values.stim,
+  stim_name: values.writen
+  }
+
+};
+
+const trial_listen_repII_tr = {
+ type: jsPsychHtmlAudioResponse,
+ stimulus: '<p style = "color:red"><b>RECORDING...</b></p>' +
+ //'<p><strong><font size="+2"> Please repeat the previous sentence</font></strong></p>'+
+ "<p style='font-size: 25px'>" + values.written + "</p>" +
+ '<p>Whenever you are done click on continue</p>', 
+ recording_duration: 15000, 
+ stimulus_duration: null,
+//allow_playback: true,
+  show_done_button: true,
+  data: { trial_id: 'convergencetraining',
+    presented_stim: audio_path_tr + conds[cur_rep]+'_'+values.stim,
+    stim_name: values.writen
+   }
+
+
+};
+
+
+var previens2_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:
+              
+              "<p style='font-size: 25px'> Be ready to listen to the next sentence.</p>"+
+              '<p>Sentence:'+cur_rep+"/2</p>",
+  choices: ["listen to the sentence"],  data: { trial_id: 'uselesstraining'}
+
+};
+
+
+timeline.push(previens2_tr);
+timeline.push(trial_listen_repI_tr)
+timeline.push(trial_listen_repII_tr)
+
+};
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// short parts to announce reading and repeating 2
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var readrep2_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus:  "<p style='font-size: 15px'> Training Block </p>" +
+              "<p style='font-size: 25px'>Welcome to <b>task n° 4</b></p>" + 
+              "<p style='font-size: 25px'> You will be asked to <b>read 2 sentences aloud.</b></p>" +
+              '<img class="readrep-img" src="images/readrep.jpg" width="200" height="200">',
+  choices: ["Continue"],
+  data: {trial_id: 'uselesstraining'},
+};
+
+timeline.push(readrep2_tr);
+
+var cur_count2 = 0
+
+// read out loud trials part 2
+for (values of readstim_tr2) {
+
+cur_count2 +=1
+var fixcross_trial_tr = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: '<p><font size="+2">First <strong>carefully</strong> read the sentence and then repeat it aloud</p></font>'+
+            '<p>Sentence:'+cur_count2+"/2</p>" ,
+  choices: ["Continue"],
+  data: { trial_id: 'before_read&repeat2training'}
+
+};
+const trial_readoutloud_tr = { 
+  type: jsPsychHtmlAudioResponse, 
+  stimulus: '<p style = "color:red"><b>RECORDING...</b></p><p><strong><font size="+3">' +values.stim+'</font></strong></p>'
+  ,  
+  recording_duration: 15000, 
+  allow_playback: true,
+  show_done_button: true,
+  record_again_button_label: 'Record Again',
+  data: { trial_id: 'read&repeat2training',
+  stim_name: values.stim   }
+
+};
+timeline.push(fixcross_trial_tr)
+timeline.push(trial_readoutloud_tr)
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// end training block 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+var ending_training = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p style='font-size: 25px'>The Training session is now over.</p>"+
+  "<p style='font-size: 25px'>You will now start the main experiment.</p>",
+  choices: ["Start main experiment"],
+  response_ends_trial: true,
+  data: { trial_id: 'uselesstraining'}
+
+  
+};
+timeline.push(ending_training)
+
+//console.log(randtrials);
+
+
+var block_1 = {
+    timeline: timeline};
+
+
+jsPsych.run([block_1])
+
+} );
+   
+
+</script>
+</html>
